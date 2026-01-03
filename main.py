@@ -1,14 +1,14 @@
 import requests, base64, random, io, os
 from PIL import Image, ImageDraw, ImageFont
 
-# 從 GitHub Secrets 讀取金鑰
+# 讀取金鑰
 LINE_ACCESS_TOKEN = os.getenv('LINE_ACCESS_TOKEN')
 IMGBB_API_KEY = os.getenv('IMGBB_API_KEY')
 FONT_PATH = './fonts/kaiu.ttf' 
 
 def generate_ai_morning_image():
-    # 30 天攝影風格與語錄配對資料庫
-   data_pool = [
+    # 30 天攝影寫實風格與語錄配對資料庫
+    data_pool = [
         {"style": "Breathtaking sunrise over a misty lavender field, cinematic lighting, photorealistic, 8k", "text": "歲月~靜好~安暖~"},
         {"style": "Traditional Chinese ink wash painting of lotus flowers with golden sun, artistic", "text": "好運~連連~吉祥~"},
         {"style": "A beautiful bouquet of red roses on a sunlit Parisian cafe table, blurred city background, 8k", "text": "平安~健康~快樂~"},
@@ -41,11 +41,12 @@ def generate_ai_morning_image():
         {"style": "Cute kittens playing in a sunlit sunroom with yarn, soft and warm atmosphere", "text": "童心~未泯~快樂~"}
     ]
     
+    # 隨機抽取一組資料
     pick = random.choice(data_pool)
     selected_style = pick["style"]
     sub_text = pick["text"]
     
-    # 1. 調用 AI 繪圖 (調整為直式比例)
+    # 1. 調用 AI 繪圖 (直式比例)
     prompt = requests.utils.quote(selected_style)
     ai_url = f"https://image.pollinations.ai/prompt/{prompt}?width=800&height=1000&nologo=true&seed={random.randint(1,999)}"
     resp = requests.get(ai_url)
@@ -55,16 +56,16 @@ def generate_ai_morning_image():
     
     # 2. 載入字體
     try:
-        font_big = ImageFont.truetype(FONT_PATH, 120)  # 大字「早安」
-        font_small = ImageFont.truetype(FONT_PATH, 55)  # 下方小字
+        font_big = ImageFont.truetype(FONT_PATH, 120)
+        font_small = ImageFont.truetype(FONT_PATH, 55)
     except:
         font_big = font_small = ImageFont.load_default()
 
-    # 3. 仿造文青風錯落排版
+    # 3. 文青風格排版位置
     x_big, y_big = 100, h * 0.65
     x_small, y_small = w/2, h * 0.9
     
-    # 繪製「早安」 (帶發光底彩)
+    # 繪製「早安」 (發光底彩)
     for dx in range(-4, 5):
         for dy in range(-4, 5):
             draw.text((x_big+dx, y_big+dy), "早安", fill=(100, 149, 237, 150), font=font_big)
