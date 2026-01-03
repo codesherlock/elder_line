@@ -1,0 +1,30 @@
+name: Daily Morning Bot
+
+on:
+  schedule:
+    # 這裡設定每天台灣時間早上 8 點執行 (UTC 是 0 點)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 讓你可以點擊按鈕手動測試
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install Pillow requests
+
+      - name: Run script
+        env:
+          # 從 Secrets 抓取金鑰給程式使用
+          LINE_ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN }}
+          IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
+        run: python main.py
